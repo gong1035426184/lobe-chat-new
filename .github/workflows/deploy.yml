@@ -2,7 +2,7 @@ name: Deploy to Vercel
 on:
   push:
     branches:
-      - canary  # 匹配你的分支名
+      - canary
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,16 +13,17 @@ jobs:
         run: bun install
       - name: Build
         run: |
-          # 限制内存并关闭所有不必要的检查，这是目前唯一的通关办法
-          export NODE_OPTIONS="--max-old-space-size=4096"
+          # 极致内存优化：限制并发数为 1，禁用所有监控和类型检查
+          export NODE_OPTIONS="--max-old-space-size=6144"
           export GENERATE_SOURCEMAP=false
           export NEXT_TELEMETRY_DISABLED=1
-          bun run build:vercel
+          export NEXT_SKIP_TYPECHECK=true
+          export NEXT_SKIP_LINT=true
+          # 强制 Next.js 只使用一个核心进行编译，防止多进程抢占内存
+          export CPUS=1
+          bun x next build
         env:
           NEXT_PUBLIC_SERVICE_MODE: client
-          # 强制禁用耗电耗内存的类型检查和 Lint
-          NEXT_SKIP_TYPECHECK: true
-          NEXT_SKIP_LINT: true
       - name: Push to Vercel
         uses: amondnet/vercel-action@v20
         with:
