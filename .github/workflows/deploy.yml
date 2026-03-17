@@ -2,7 +2,7 @@ name: Deploy to Vercel
 on:
   push:
     branches:
-      - canary  # 确保匹配你的分支名
+      - canary  # 匹配你的分支名
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,15 +13,14 @@ jobs:
         run: bun install
       - name: Build
         run: |
-          # 限制 Node 内存占用，并关闭不必要的 SourceMap 和 类型检查以节省内存
+          # 限制内存并关闭所有不必要的检查，这是目前唯一的通关办法
           export NODE_OPTIONS="--max-old-space-size=4096"
           export GENERATE_SOURCEMAP=false
           export NEXT_TELEMETRY_DISABLED=1
-          # 使用生产环境构建命令
           bun run build:vercel
         env:
           NEXT_PUBLIC_SERVICE_MODE: client
-          # 强行跳过检查，这是省内存的“绝招”
+          # 强制禁用耗电耗内存的类型检查和 Lint
           NEXT_SKIP_TYPECHECK: true
           NEXT_SKIP_LINT: true
       - name: Push to Vercel
