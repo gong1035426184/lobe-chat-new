@@ -1,15 +1,15 @@
-name: Production Deploy
+name: Deploy to Vercel
 on:
   push:
     branches:
-      - main
+      - canary  # 必须是 canary，因为你的主分支叫这个
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
-      - name: Install dependencies
+      - name: Install
         run: bun install
       - name: Build
         run: |
