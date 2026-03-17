@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (No-Build Mode)
 on:
   push:
     branches:
@@ -8,22 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      - name: Install
-        run: bun install
-      - name: Build
-        run: |
-          # 极致内存优化：限制并发数为 1，禁用所有监控和类型检查
-          export NODE_OPTIONS="--max-old-space-size=6144"
-          export GENERATE_SOURCEMAP=false
-          export NEXT_TELEMETRY_DISABLED=1
-          export NEXT_SKIP_TYPECHECK=true
-          export NEXT_SKIP_LINT=true
-          # 强制 Next.js 只使用一个核心进行编译，防止多进程抢占内存
-          export CPUS=1
-          bun x next build
-        env:
-          NEXT_PUBLIC_SERVICE_MODE: client
       - name: Push to Vercel
         uses: amondnet/vercel-action@v20
         with:
